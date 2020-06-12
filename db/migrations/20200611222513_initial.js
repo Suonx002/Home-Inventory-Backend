@@ -39,14 +39,14 @@ exports.up = async (knex) => {
     // create users table
     await knex.schema.createTable(tableNames.user, (table) => {
       table.increments().notNullable();
-      emailColumn.notNullable().unique();
+      emailColumn(table, 'email').notNullable().unique();
       table.string('name').notNullable();
       table.string('password', 127).notNullable();
       table.datetime('last_login');
       addDefaultColumns(table);
     }),
-    // create location table
-    await knex.schema.createTable(tableNames.location, (table) => {
+    // create inventory_location table
+    await knex.schema.createTable(tableNames.inventory_location, (table) => {
       table.increments().notNullable();
       table.string('name').notNullable().unique();
       table.string('description', 1000);
@@ -86,20 +86,21 @@ exports.up = async (knex) => {
     urlColumn(table, 'logo_url');
     emailColumn(table, 'email');
     tableReferences(table, 'address_id', 'address');
-
     addDefaultColumns(table);
   });
 };
 
 exports.down = async (knex) => {
-  await Promise.all([
-    await knex.schema.dropTable(tableNames.company),
-    await knex.schema.dropTable(tableNames.address),
-    await knex.schema.dropTable(tableNames.user),
-    await knex.schema.dropTable(tableNames.item_type),
-    await knex.schema.dropTable(tableNames.country),
-    await knex.schema.dropTable(tableNames.state),
-    await knex.schema.dropTable(tableNames.shape),
-    await knex.schema.dropTable(tableNames.location),
-  ]).map((tableName) => knex.schema.dropTable(tableName));
+  await Promise.all(
+    [
+      tableNames.company,
+      tableNames.address,
+      tableNames.user,
+      tableNames.item_type,
+      tableNames.country,
+      tableNames.state,
+      tableNames.shape,
+      tableNames.inventory_location,
+    ].map((tableName) => knex.schema.dropTable(tableName))
+  );
 };
