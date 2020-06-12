@@ -17,7 +17,11 @@ const createNameTable = (knex, table_name) => {
 
 const tableReferences = (table, columnName, foreignTableName) => {
   table.integer(columnName).unsigned();
-  table.foreign(columnName).references('id').inTable(foreignTableName);
+  table
+    .foreign(columnName)
+    .references('id')
+    .inTable(foreignTableName)
+    .onDelete('cascade');
 };
 
 const urlColumn = (table, columnName) => {
